@@ -123,7 +123,7 @@ ofxKinectCommonBridge::ofxKinectCommonBridge(){
 	bUsingSkeletons = false;
   	bUseTexture = true;
 	bProgrammableRenderer = false;
-	bNearWhite = false;
+	bNearWhite = true;
 	
 	setDepthClipping();
 }
@@ -140,12 +140,12 @@ void ofxKinectCommonBridge::updateDepthLookupTable()
 {
 	unsigned char nearColor = bNearWhite ? 255 : 0;
 	unsigned char farColor = bNearWhite ? 0 : 255;
-	unsigned int maxDepthLevels = 10001;
+	unsigned int maxDepthLevels = 8191; // 13 bits of the raw depth data gives us the distance in mm. 2^12 = 28191
 	depthLookupTable.resize(maxDepthLevels);
 	depthLookupTable[0] = 0;
 	for(unsigned int i = 1; i < maxDepthLevels; i++)
 	{
-		depthLookupTable[i] = ofMap(i, nearClipping, farClipping, nearColor, farColor, true);
+		depthLookupTable[i] = ofMap(i, nearClipping, farClipping, nearColor, farColor, false);
 	}
 }
 
@@ -299,10 +299,12 @@ void ofxKinectCommonBridge::update()
 		} else {
 
 			for(int i = 0; i < depthPixels.getWidth()*depthPixels.getHeight(); i++) {
-				depthPixels[i] = depthLookupTable[ ofClamp(depthPixelsRaw[i] >> 4, 0, depthLookupTable.size()-1 ) ];
-				depthPixelsNui[i].depth = NuiDepthPixelToDepth(depthPixelsRaw[i]);
+				unsigned short depth = NuiDepthPixelToDepth( depthPixelsRaw[i] );
+
+				depthPixels[i] = depthLookupTable[ ofClamp(depth, 0, depthLookupTable.size()-1 ) ];
+				depthPixelsNui[i].depth = depth;
 				depthPixelsNui[i].playerIndex = NuiDepthPixelToPlayerIndex(depthPixelsRaw[i]);
-				depthPixelsRaw[i] = depthPixelsRaw[i] >> 4;
+				depthPixelsRaw[i] = depth;
 			}
 		}
 
