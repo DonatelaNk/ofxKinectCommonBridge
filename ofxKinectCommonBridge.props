@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalLibraryDirectories>$(KINECTSDK10_DIR)\lib\x86;..\..\..\addons\ofxKinectCommonBridge\libs\KinectCommonBridge\lib\windows\vs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(KINECTSDK10_DIR)\lib\amd64;..\..\..\addons\ofxKinectCommonBridge\libs\KinectCommonBridge\lib\windows\vs64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>KinectCommonBridge.lib;Kinect10.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
@@ -14,7 +14,9 @@
     <PostBuildEvent>
       <Command>xcopy /e /i /y "$(ProjectDir)..\..\..\export\vs\*.dll" "$(ProjectDir)bin"
 xcopy /e /i /y "..\..\..\addons\ofxKinectCommonBridge\libs\KinectCommonBridge\lib\windows\*.dll" "$(ProjectDir)bin"
-%(Command)</Command>
+xcopy "$(FTSDK_DIR)Redist\amd64\FaceTrackLib.dll" "$(OutDir)" /eiycq
+xcopy "$(FTSDK_DIR)Redist\amd64\FaceTrackData.dll" "$(OutDir)" /eiycq
+        %(Command)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
