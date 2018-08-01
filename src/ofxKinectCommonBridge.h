@@ -244,7 +244,6 @@ class ofxKinectCommonBridge : protected ofThread {
 	ofPixels videoPixels;
 	ofPixels videoPixelsBack;			///< rgb back
 	ofPixels depthPixels;
-	ofPixels depthPixelsBack;
 	ofShortPixels depthPixelsRaw;
 	ofShortPixels depthPixelsRawBack;	///< depth back
 	NUI_DEPTH_IMAGE_PIXEL* depthPixelsNui;
