@@ -606,7 +606,7 @@ bool ofxKinectCommonBridge::initSensor( int id )
 		return false;
 	}
 
-	if(ofGetCurrentRenderer()->getType() == ofGLProgrammableRenderer::TYPE)
+	if(ofIsGLProgrammableRenderer())
 	{
 		bProgrammableRenderer = true;
 	}
@@ -958,7 +958,7 @@ bool ofxKinectCommonBridge::start()
 		return false;
 	}
 
-	startThread(true, false);
+	startThread(true);
 	bStarted = true;	
 
 	return true;
