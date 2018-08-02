@@ -245,12 +245,10 @@ class ofxKinectCommonBridge : protected ofThread {
 	ofPixels videoPixelsBack;			///< rgb back
 	ofPixels depthPixels;
 	ofShortPixels depthPixelsRaw;
-	//ofShortPixels depthPixelsRawBack;	///< depth back
+	
 	NUI_DEPTH_IMAGE_PIXEL* depthPixelsNui;	 // depth pixels with full range
 	NUI_DEPTH_IMAGE_PIXEL* depthPixelsNuiBack;
 
-	ofPixels irPixels;
-	ofPixels irPixelsBack;
 
 	bool bIsFrameNewVideo;
 	bool bNeedsUpdateVideo;
