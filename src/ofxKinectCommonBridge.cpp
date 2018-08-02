@@ -251,21 +251,14 @@ void ofxKinectCommonBridge::update()
 		}
 
 		bIsFrameNewDepth = true;
-		swap(depthPixelsRaw, depthPixelsRawBack);
+		swap(depthPixelsNui, depthPixelsNuiBack);
 		bNeedsUpdateDepth = false;
 		
 		// if mapping depth to color, upscale depth
 		if(mappingDepthToColor) 
 		{
 			NUI_COLOR_IMAGE_POINT *pts = new NUI_COLOR_IMAGE_POINT[colorFormat.dwWidth*colorFormat.dwHeight];
-			
-			int i = 0; 
-			while ( i < (depthFormat.dwWidth*depthFormat.dwHeight)) {
-				depthPixelsNui[i].depth = NuiDepthPixelToDepth(depthPixelsRaw[i]);
-				depthPixelsNui[i].playerIndex = NuiDepthPixelToPlayerIndex(depthPixelsRaw[i]);
-				i++;
-			}
-			
+
 			HRESULT mapResult;
 			mapResult = mapper->MapDepthFrameToColorFrame(depthRes, (depthFormat.dwWidth*depthFormat.dwHeight), depthPixelsNui, NUI_IMAGE_TYPE_COLOR, colorRes, (depthFormat.dwWidth*depthFormat.dwHeight), pts);
 
@@ -281,9 +274,9 @@ void ofxKinectCommonBridge::update()
 
 				for( int i = 0; i < (depthFormat.dwWidth*depthFormat.dwHeight); i++ ) {
 					if(pts[i].x > 0 && pts[i].x < depthFormat.dwWidth && pts[i].y > 0 && pts[i].y < depthFormat.dwHeight) {
-						//depthPixels[i] = depthLookupTable[ ofClamp(depthPixelsRaw[pts[i].y * depthFormat.dwWidth + pts[i].x] >> 4, 0, depthLookupTable.size()-1 ) ];
+						unsigned short depth = NuiDepthPixelToDepth(depthPixelsNui[i].depth);
 						int colorImageIndex = pts[i].y * depthFormat.dwWidth + pts[i].x;
-						depthPixels[colorImageIndex] = depthLookupTable[ofClamp(depthPixelsRaw[i] >> 4, 0, depthLookupTable.size() - 1)];
+						depthPixels[colorImageIndex] = depthLookupTable[ofClamp(depth, 0, depthLookupTable.size() - 1)];
 					}
 				}
 			} else {
@@ -293,14 +286,13 @@ void ofxKinectCommonBridge::update()
 			delete[] pts;
 		
 			for(int i = 0; i < depthPixels.getWidth()*depthPixels.getHeight(); i++) {
-				depthPixelsRaw[i] = depthPixelsRaw[i] >> 4;
+				depthPixelsRaw[i] = NuiDepthPixelToDepth(depthPixelsNui[i].depth);
 			}
 
 		} else {
 
 			for(int i = 0; i < depthPixels.getWidth()*depthPixels.getHeight(); i++) {
-				unsigned short depth = NuiDepthPixelToDepth( depthPixelsRaw[i] );
-
+				unsigned short depth = depthPixelsNui[i].depth;
 				depthPixels[i] = depthLookupTable[ ofClamp(depth, 0, depthLookupTable.size()-1 ) ];
 				depthPixelsNui[i].depth = depth;
 				depthPixelsNui[i].playerIndex = NuiDepthPixelToPlayerIndex(depthPixelsRaw[i]);
@@ -667,21 +659,20 @@ bool ofxKinectCommonBridge::createDepthPixels( int width, int height )
 
     if( hKinect != 0 )
 	{
-		depthPixelsNui = new NUI_DEPTH_IMAGE_PIXEL[(depthFormat.dwWidth*depthFormat.dwHeight)];
+		depthPixelsNui = new NUI_DEPTH_IMAGE_PIXEL[(depthFormat.dwWidth * depthFormat.dwHeight)];
+		depthPixelsNuiBack = new NUI_DEPTH_IMAGE_PIXEL[(depthFormat.dwWidth * depthFormat.dwHeight)];
 
-		if(bProgrammableRenderer) {
+		if (bProgrammableRenderer) {
 			depthPixels.allocate(depthFormat.dwWidth, depthFormat.dwHeight, OF_IMAGE_COLOR);
-		} else {
+		}
+		else {
 			depthPixels.allocate(depthFormat.dwWidth, depthFormat.dwHeight, OF_IMAGE_GRAYSCALE);
 		}
 
 		depthPixelsRaw.allocate(depthFormat.dwWidth, depthFormat.dwHeight, OF_IMAGE_GRAYSCALE);
-		depthPixelsRawBack.allocate(depthFormat.dwWidth, depthFormat.dwHeight, OF_IMAGE_GRAYSCALE);
 
-		if(bUseTexture)
-		{
-			if(bProgrammableRenderer)
-			{
+		if (bUseTexture) {
+			if (bProgrammableRenderer) {
 				//int w, int h, int glInternalFormat, bool bUseARBExtention, int glFormat, int pixelType
 				depthTex.allocate(depthFormat.dwWidth, depthFormat.dwHeight, GL_R8);//, true, GL_R8, GL_UNSIGNED_BYTE);
 				depthTex.setRGToRGBASwizzles(true);
@@ -1019,10 +1010,11 @@ void ofxKinectCommonBridge::threadedFunction(){
 	//how can we tell?
 	while(isThreadRunning()) {
 
-        if( KinectIsDepthFrameReady(hKinect) && SUCCEEDED( KinectGetDepthFrame(hKinect, depthFormat.cbBufferSize, (BYTE*)depthPixelsRawBack.getPixels(), &timestamp) ) )
+		int numPixels = depthFormat.dwHeight * depthFormat.dwWidth;
+		if (KinectIsDepthFrameReady(hKinect) && SUCCEEDED(KinectGetDepthImagePixels(hKinect, numPixels, depthPixelsNuiBack, &timestamp)))
 		{
 			bNeedsUpdateDepth = true;
-        }
+		}
 
 		if(bVideoIsInfrared)
 		{
