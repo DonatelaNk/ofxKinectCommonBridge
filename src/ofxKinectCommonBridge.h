@@ -179,6 +179,8 @@ class ofxKinectCommonBridge : protected ofThread {
 	void drawDepth(const ofPoint& point);
 	void drawDepth(const ofRectangle& rect);
 
+	void drawWorld(float x, float y, float w, float h);
+
 	void drawIR( float x, float y, float w, float h );
 
 	vector<Skeleton> &getSkeletons();
@@ -249,6 +251,9 @@ class ofxKinectCommonBridge : protected ofThread {
 	NUI_DEPTH_IMAGE_PIXEL* depthPixelsNui;	 // depth pixels with full range
 	NUI_DEPTH_IMAGE_PIXEL* depthPixelsNuiBack;
 
+	ofFloatPixels worldPixels; // real world coordinates
+	ofTexture worldTex;
+	void createWorldPixels();
 
 	bool bIsFrameNewVideo;
 	bool bNeedsUpdateVideo;
