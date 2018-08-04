@@ -301,7 +301,6 @@ void ofxKinectCommonBridge::update() {
 		}
 
 		if (bUseTexture) {
-			//depthTex.loadData(depthPixels.getPixels(), depthFormat.dwWidth, depthFormat.dwHeight, GL_LUMINANCE);
 			if (bProgrammableRenderer) {
 				depthTex.loadData(depthPixels.getPixels(), depthFormat.dwWidth, depthFormat.dwHeight, GL_RED);
 				rawDepthTex.loadData(depthPixelsRaw.getPixels(), depthFormat.dwWidth, depthFormat.dwHeight, GL_RED);
@@ -316,13 +315,11 @@ void ofxKinectCommonBridge::update() {
 		bIsFrameNewDepth = false;
 	}
 
-	// ...testing...
 	// update world coords
 	if (bIsFrameNewDepth) {
 		int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
 		int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
 
-		//Vector4 *points = new Vector4[numColorPixels];
 		KinectMapDepthFrameToSkeletonFrame(hKinect, depthRes,
 			numDepthPixels, depthPixelsNui,
 			numWorldPixels, reinterpret_cast<Vector4*>(worldPixels.getData()));
