@@ -187,7 +187,39 @@ void ofxKinectCommonBridge::update() {
 		return;
 	}
 
-	// update color or IR pixels and textures if necessary
+	updateVideoPixels();
+
+	updateDepthPixels();
+	
+	updateWorldPixels();
+
+	if (bUsingSkeletons) {
+		updateSkeletons();
+	}	
+
+#ifdef KCB_ENABLE_SPEECH
+	if (bUpdateSpeech) {
+		ofxKCBSpeechEvent spEvent;
+		spEvent.detectedSpeech = speechData.detectedSpeech;
+		spEvent.confidence = speechData.confidence;
+
+		ofNotifyEvent(ofxKCBSpeechEvent::event, spEvent, this);
+
+		bUpdateSpeech = false;
+	}
+#endif
+
+#ifdef KCB_ENABLE_FT
+	if (bUpdateFaces) {
+		//swap<ofxKCBFace>( faceData, faceDataBack ); // copy it in, need lock?
+		faceData = faceDataBack;
+		bIsFaceNew = true;
+	}
+#endif
+}
+
+
+void ofxKinectCommonBridge::updateVideoPixels() {
 	if (bNeedsUpdateVideo) {
 		bIsFrameNewVideo = true;
 
@@ -196,28 +228,28 @@ void ofxKinectCommonBridge::update() {
 		// if you're mapping color pix to depth space, downscale color pix
 		/*if(mappingColorToDepth && beginMappingColorToDepth) {
 
-			NUI_DEPTH_IMAGE_POINT  *pts = new NUI_DEPTH_IMAGE_POINT[colorFormat.dwHeight*colorFormat.dwWidth];
-			NUI_DEPTH_IMAGE_PIXEL  *depth = new NUI_DEPTH_IMAGE_PIXEL[depthFormat.dwHeight*depthFormat.dwWidth];
+		NUI_DEPTH_IMAGE_POINT  *pts = new NUI_DEPTH_IMAGE_POINT[colorFormat.dwHeight*colorFormat.dwWidth];
+		NUI_DEPTH_IMAGE_PIXEL  *depth = new NUI_DEPTH_IMAGE_PIXEL[depthFormat.dwHeight*depthFormat.dwWidth];
 
-			int i = 0;
-			while ( i < (depthFormat.dwWidth*depthFormat.dwHeight)) {
-				depth[i].depth = (USHORT) depthPixelsRaw.getPixels()[i];
-				depth[i].playerIndex = 0;
-				i++;
-			}
+		int i = 0;
+		while ( i < (depthFormat.dwWidth*depthFormat.dwHeight)) {
+		depth[i].depth = (USHORT) depthPixelsRaw.getPixels()[i];
+		depth[i].playerIndex = 0;
+		i++;
+		}
 
-			HRESULT mapResult;
-			mapResult = mapper->MapColorFrameToDepthFrame(NUI_IMAGE_TYPE_COLOR, NUI_IMAGE_RESOLUTION_640x480, NUI_IMAGE_RESOLUTION_640x480,
-						640 * 480, depth,
-						640 * 480, pts);
+		HRESULT mapResult;
+		mapResult = mapper->MapColorFrameToDepthFrame(NUI_IMAGE_TYPE_COLOR, NUI_IMAGE_RESOLUTION_640x480, NUI_IMAGE_RESOLUTION_640x480,
+		640 * 480, depth,
+		640 * 480, pts);
 
-			for( int i = 0; i < (depthFormat.dwWidth*depthFormat.dwHeight); i++ )
-			{
-				videoPixels[i] = videoPixels[pts[i].y * depthFormat.dwWidth + pts[i].x];
-			}
+		for( int i = 0; i < (depthFormat.dwWidth*depthFormat.dwHeight); i++ )
+		{
+		videoPixels[i] = videoPixels[pts[i].y * depthFormat.dwWidth + pts[i].x];
+		}
 
-			delete[] pts;
-			delete[] depth;
+		delete[] pts;
+		delete[] depth;
 		}*/
 
 		bNeedsUpdateVideo = false;
@@ -248,8 +280,10 @@ void ofxKinectCommonBridge::update() {
 	else {
 		bIsFrameNewVideo = false;
 	}
+}
 
-	// update depth pixels and texture if necessary
+
+void ofxKinectCommonBridge::updateDepthPixels() {
 	if (bNeedsUpdateDepth) {
 		if (mappingColorToDepth) {
 			beginMappingColorToDepth = true;
@@ -309,13 +343,15 @@ void ofxKinectCommonBridge::update() {
 				depthTex.loadData(depthPixels.getPixels(), depthFormat.dwWidth, depthFormat.dwHeight, GL_LUMINANCE);
 				rawDepthTex.loadData(depthPixelsRaw.getPixels(), depthFormat.dwWidth, depthFormat.dwHeight, GL_LUMINANCE16);
 			}
-		}		
+		}
 	}
 	else {
 		bIsFrameNewDepth = false;
 	}
+}
 
-	// update world coords
+
+void ofxKinectCommonBridge::updateWorldPixels() {
 	if (bIsFrameNewDepth) {
 		int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
 		int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
@@ -323,14 +359,16 @@ void ofxKinectCommonBridge::update() {
 		KinectMapDepthFrameToSkeletonFrame(hKinect, depthRes,
 			numDepthPixels, depthPixelsNui,
 			numWorldPixels, reinterpret_cast<Vector4*>(worldPixels.getData()));
-		
+
 		if (bUseTexture) {
 			worldTex.loadData(worldPixels);
 		}
 	}
+}
 
-	// update skeletons if necessary
-	if (bUsingSkeletons && bNeedsUpdateSkeleton) {
+
+void ofxKinectCommonBridge::updateSkeletons() {
+	if (bNeedsUpdateSkeleton) {
 		bIsSkeletonFrameNew = true;
 		bNeedsUpdateSkeleton = false;
 		bool foundSkeleton = false;
@@ -356,27 +394,8 @@ void ofxKinectCommonBridge::update() {
 	else {
 		bNeedsUpdateSkeleton = false;
 	}
-
-#ifdef KCB_ENABLE_SPEECH
-	if (bUpdateSpeech) {
-		ofxKCBSpeechEvent spEvent;
-		spEvent.detectedSpeech = speechData.detectedSpeech;
-		spEvent.confidence = speechData.confidence;
-
-		ofNotifyEvent(ofxKCBSpeechEvent::event, spEvent, this);
-
-		bUpdateSpeech = false;
-	}
-#endif
-
-#ifdef KCB_ENABLE_FT
-	if (bUpdateFaces) {
-		//swap<ofxKCBFace>( faceData, faceDataBack ); // copy it in, need lock?
-		faceData = faceDataBack;
-		bIsFaceNew = true;
-	}
-#endif
 }
+
 
 #ifdef KCB_ENABLE_FT
 void ofxKinectCommonBridge::updateFaceTrackingData(IFTResult* ftResult) {

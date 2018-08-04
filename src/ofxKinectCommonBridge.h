@@ -225,10 +225,13 @@ class ofxKinectCommonBridge : protected ofThread {
 	//quantize depth buffer to 8 bit range
 	vector<unsigned char> depthLookupTable;
 	void updateDepthLookupTable();
-	void updateDepthPixels();
-	void updateIRPixels();
 	bool bNearWhite;
 	float nearClipping, farClipping;
+
+	void updateVideoPixels();
+	void updateDepthPixels();
+	void updateWorldPixels();
+	void updateSkeletons();
 
 #ifdef KCB_ENABLE_FT
 	void updateFaceTrackingData( IFTResult* ftResult );
