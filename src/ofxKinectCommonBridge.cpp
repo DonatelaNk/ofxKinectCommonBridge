@@ -307,8 +307,12 @@ void ofxKinectCommonBridge::updateDepthPixels() {
 					ofLog(OF_LOG_ERROR) << "Mapping depth frame to color frame is not support yet for different resolutions";
 				}
 
-				for (int i = 0; i < (depthFormat.dwWidth*depthFormat.dwHeight); i++) {
-					depthPixels[i] = 0; // reset pixel
+				// reset pixel
+				for (int i = 0; i < (depthFormat.dwWidth * depthFormat.dwHeight); i++) {
+					depthPixels[i] = 0; 
+				}
+
+				for (int i = 0; i < (depthFormat.dwWidth * depthFormat.dwHeight); i++) {
 					if (pts[i].x > 0 && pts[i].x < depthFormat.dwWidth && pts[i].y > 0 && pts[i].y < depthFormat.dwHeight) {
 						unsigned short depth = depthPixelsNui[i].depth;
 						int colorImageIndex = pts[i].y * depthFormat.dwWidth + pts[i].x;

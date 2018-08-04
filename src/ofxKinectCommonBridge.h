@@ -319,6 +319,4 @@ class ofxKinectCommonBridge : protected ofThread {
 
 	INuiSensor *nuiSensor;
 	INuiCoordinateMapper *mapper;
-
-
 };
