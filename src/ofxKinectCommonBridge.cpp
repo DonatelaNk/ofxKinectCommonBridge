@@ -357,12 +357,22 @@ void ofxKinectCommonBridge::updateDepthPixels() {
 
 void ofxKinectCommonBridge::updateWorldPixels() {
 	if (bIsFrameNewDepth) {
-		int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
-		int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
+		if (mappingDepthToColor) {
+			int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
+			int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
 
-		KinectMapDepthFrameToSkeletonFrame(hKinect, depthRes,
-			numDepthPixels, depthPixelsNui,
-			numWorldPixels, reinterpret_cast<Vector4*>(worldPixels.getData()));
+			KinectMapColorFrameToSkeletonFrame(hKinect, NUI_IMAGE_TYPE_COLOR, colorRes, depthRes, 
+				numDepthPixels, depthPixelsNui,
+				numWorldPixels, reinterpret_cast<Vector4*>(worldPixels.getData()));
+		}
+		else {
+			int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
+			int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
+
+			KinectMapDepthFrameToSkeletonFrame(hKinect, depthRes,
+				numDepthPixels, depthPixelsNui,
+				numWorldPixels, reinterpret_cast<Vector4*>(worldPixels.getData()));
+		}
 
 		if (bUseTexture) {
 			worldTex.loadData(worldPixels);
