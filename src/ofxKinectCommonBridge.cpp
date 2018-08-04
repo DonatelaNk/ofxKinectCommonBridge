@@ -289,7 +289,7 @@ void ofxKinectCommonBridge::update() {
 			delete[] pts;
 
 			for (int i = 0; i < depthPixels.getWidth()*depthPixels.getHeight(); i++) {
-				depthPixelsRaw[i] = NuiDepthPixelToDepth(depthPixelsNui[i].depth);
+				depthPixelsRaw[i] = depthPixelsNui[i].depth;
 			}
 		}
 		else {
