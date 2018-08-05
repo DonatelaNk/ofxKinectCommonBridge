@@ -624,7 +624,9 @@ void ofxKinectCommonBridge::drawWorld(const ofRectangle & rect) {
 
 
 void ofxKinectCommonBridge::drawWorld(float x, float y, float w, float h) {
-	worldTex.draw(x, y, w, h);
+	if (bUseTexture) {
+		worldTex.draw(x, y, w, h);
+	}
 }
 
 
@@ -998,7 +1000,7 @@ bool ofxKinectCommonBridge::start() {
 		return false;
 	}
 
-	startThread();
+	startThread(true);
 	bStarted = true;
 
 	return true;
