@@ -541,7 +541,7 @@ void ofxKinectCommonBridge::drawRawDepth(float _x, float _y, float _w, float _h)
 
 
 void ofxKinectCommonBridge::drawRawDepth(float _x, float _y) {
-	drawRawDepth(_x, _y, (float)colorFormat.dwWidth, (float)colorFormat.dwHeight);
+	drawRawDepth(_x, _y, (float)depthFormat.dwWidth, (float)depthFormat.dwHeight);
 }
 
 
