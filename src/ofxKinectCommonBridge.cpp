@@ -303,9 +303,9 @@ void ofxKinectCommonBridge::updateDepthPixels() {
 
 			if (SUCCEEDED(mapResult)) {
 				// @Thibaut For now, assume the depth and color image are the same size for the mapping
-				if (colorFormat.dwWidth != depthFormat.dwWidth || colorFormat.dwHeight != depthFormat.dwHeight) {
-					ofLog(OF_LOG_ERROR) << "Mapping depth frame to color frame is not support yet for different resolutions";
-				}
+				//if (colorFormat.dwWidth != depthFormat.dwWidth || colorFormat.dwHeight != depthFormat.dwHeight) {
+				//	ofLog(OF_LOG_ERROR) << "Mapping depth frame to color frame is not support yet for different resolutions";
+				//}
 
 				// reset pixel
 				for (int i = 0; i < (depthFormat.dwWidth * depthFormat.dwHeight); i++) {
