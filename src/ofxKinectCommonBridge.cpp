@@ -608,6 +608,21 @@ void ofxKinectCommonBridge::drawSkeleton(int index) {
 }
 
 
+void ofxKinectCommonBridge::drawWorld(float x, float y) {
+	drawWorld(x, y, (float)depthFormat.dwWidth, (float)depthFormat.dwHeight);
+}
+
+
+void ofxKinectCommonBridge::drawWorld(const ofPoint & point) {
+	drawWorld(point.x, point.y);
+}
+
+
+void ofxKinectCommonBridge::drawWorld(const ofRectangle & rect) {
+	drawWorld(rect.x, rect.y, rect.width, rect.height);
+}
+
+
 void ofxKinectCommonBridge::drawWorld(float x, float y, float w, float h) {
 	worldTex.draw(x, y, w, h);
 }

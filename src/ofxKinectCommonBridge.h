@@ -179,9 +179,13 @@ class ofxKinectCommonBridge : protected ofThread {
 	void drawDepth(const ofPoint& point);
 	void drawDepth(const ofRectangle& rect);
 
+	/// draw the real world coords texture
 	void drawWorld(float x, float y, float w, float h);
+	void drawWorld(float x, float y);
+	void drawWorld(const ofPoint& point);
+	void drawWorld(const ofRectangle& rect);
 
-	void drawIR( float x, float y, float w, float h );
+	//void drawIR( float x, float y, float w, float h );
 
 	vector<Skeleton> &getSkeletons();
 	void drawSkeleton(int index);
