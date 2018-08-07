@@ -361,10 +361,6 @@ void ofxKinectCommonBridge::updateDepthPixels() {
 
 void ofxKinectCommonBridge::updateWorldPixels() {
 	if (bIsFrameNewDepth) {
-		if (!worldPixels.isAllocated()) {
-			createWorldPixels();
-		}
-
 		if (mappingDepthToColor) {
 			int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
 			int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
@@ -514,7 +510,12 @@ NUI_DEPTH_IMAGE_PIXEL* ofxKinectCommonBridge::getNuiDepthPixelsRef() {
 }
 
 void ofxKinectCommonBridge::setUseWorldMap(bool use) {
-	bUsingWorld = use;
+	if (!bStarted) {
+		bUsingWorld = use;
+	}
+	else {
+		ofLogWarning("ofxKinectCommonBridge::setUseWorldMap") << "this function needs to be called before kinect.start()";
+	}
 }
 
 
