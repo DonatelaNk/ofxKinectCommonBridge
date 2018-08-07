@@ -762,6 +762,7 @@ void ofxKinectCommonBridge::createWorldPixels() {
 
 	if (bUseTexture) {
 		worldTex.allocate(worldPixels);
+		worldTex.setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
 	}
 }
 
