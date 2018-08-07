@@ -146,7 +146,7 @@ void ofxKinectCommonBridge::setDepthClipping(float nearClip, float farClip) {
 void ofxKinectCommonBridge::updateDepthLookupTable() {
 	unsigned char nearColor = bNearWhite ? 255 : 0;
 	unsigned char farColor = bNearWhite ? 0 : 255;
-	unsigned int maxDepthLevels = 8191; // 13 bits of the raw depth data gives us the distance in mm. 2^12 = 28191
+	unsigned int maxDepthLevels = 8191; // 13 bits of the raw depth data gives us the distance in mm. 2^12 = 8191
 	depthLookupTable.resize(maxDepthLevels);
 	depthLookupTable[0] = 0;
 	for (unsigned int i = 1; i < maxDepthLevels; i++)
