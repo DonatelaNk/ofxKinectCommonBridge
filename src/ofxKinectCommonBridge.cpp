@@ -125,6 +125,8 @@ ofxKinectCommonBridge::ofxKinectCommonBridge() {
 	mappingColorToDepth = false;
 	mappingDepthToColor = false;
 
+	bUsingWorld = false;
+
 	bUsingSkeletons = false;
 	bUseTexture = true;
 	bProgrammableRenderer = false;
@@ -191,7 +193,9 @@ void ofxKinectCommonBridge::update() {
 
 	updateDepthPixels();
 	
-	updateWorldPixels();
+	if (bUsingWorld) {
+		updateWorldPixels();
+	}
 
 	if (bUsingSkeletons) {
 		updateSkeletons();
@@ -357,6 +361,10 @@ void ofxKinectCommonBridge::updateDepthPixels() {
 
 void ofxKinectCommonBridge::updateWorldPixels() {
 	if (bIsFrameNewDepth) {
+		if (!worldPixels.isAllocated()) {
+			createWorldPixels();
+		}
+
 		if (mappingDepthToColor) {
 			int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
 			int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
@@ -503,6 +511,10 @@ ofShortPixels & ofxKinectCommonBridge::getRawDepthPixelsRef() {
 
 NUI_DEPTH_IMAGE_PIXEL* ofxKinectCommonBridge::getNuiDepthPixelsRef() {
 	return depthPixelsNui;
+}
+
+void ofxKinectCommonBridge::setUseWorldMap(bool use) {
+	bUsingWorld = use;
 }
 
 
@@ -686,7 +698,6 @@ bool ofxKinectCommonBridge::initDepthStream(int width, int height, bool nearMode
 	if (KinectStreamStatusError != KinectGetDepthStreamStatus(hKinect)) {
 		depthFormat = df;
 		createDepthPixels();
-		createWorldPixels();
 	}
 	else {
 		ofLogError("ofxKinectCommonBridge::open") << "Error opening depth stream";

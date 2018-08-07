@@ -161,6 +161,15 @@ class ofxKinectCommonBridge : protected ofThread {
 	// you can just not use any streams if you want
 	void setUseStreams(bool bUse);
 
+	/// enable/disable updating pixels containing real world coordinates
+	void setUseWorldMap(bool use);
+
+	// TODO
+	// mapping helpers
+	ofVec3f getWorldCoordinateAt(int x, int y);
+	ofFloatPixels& getWorldPixels() { return worldPixels; }
+	ofTexture& getWorldTexture() { return worldTex; }
+
 	/// draw the video texture
 	void draw(float x, float y, float w, float h);
 	void draw(float x, float y);
@@ -234,8 +243,8 @@ class ofxKinectCommonBridge : protected ofThread {
 
 	void updateVideoPixels();
 	void updateDepthPixels();
-	void updateWorldPixels();
 	void updateSkeletons();
+	void updateWorldPixels();
 
 #ifdef KCB_ENABLE_FT
 	void updateFaceTrackingData( IFTResult* ftResult );
@@ -261,6 +270,8 @@ class ofxKinectCommonBridge : protected ofThread {
 	ofFloatPixels worldPixels; // real world coordinates
 	ofTexture worldTex;
 	void createWorldPixels();
+	
+	bool bUsingWorld;
 
 	bool bIsFrameNewVideo;
 	bool bNeedsUpdateVideo;
