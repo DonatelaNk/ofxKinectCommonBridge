@@ -361,18 +361,15 @@ void ofxKinectCommonBridge::updateDepthPixels() {
 
 void ofxKinectCommonBridge::updateWorldPixels() {
 	if (bIsFrameNewDepth) {
-		if (mappingDepthToColor) {
-			int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
-			int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
+		int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
+		int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
 
+		if (mappingDepthToColor) {
 			KinectMapColorFrameToSkeletonFrame(hKinect, NUI_IMAGE_TYPE_COLOR, colorRes, depthRes, 
 				numDepthPixels, depthPixelsNui,
 				numWorldPixels, reinterpret_cast<Vector4*>(worldPixels.getData()));
 		}
 		else {
-			int numDepthPixels = depthFormat.dwWidth * depthFormat.dwHeight;
-			int numWorldPixels = worldPixels.getWidth() * worldPixels.getHeight();
-
 			KinectMapDepthFrameToSkeletonFrame(hKinect, depthRes,
 				numDepthPixels, depthPixelsNui,
 				numWorldPixels, reinterpret_cast<Vector4*>(worldPixels.getData()));
@@ -523,6 +520,7 @@ ofShortPixels & ofxKinectCommonBridge::getRawDepthPixelsRef() {
 NUI_DEPTH_IMAGE_PIXEL* ofxKinectCommonBridge::getNuiDepthPixelsRef() {
 	return depthPixelsNui;
 }
+
 
 void ofxKinectCommonBridge::setUseWorldMap(bool use) {
 	if (!bStarted) {
