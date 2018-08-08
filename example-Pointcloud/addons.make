@@ -1,0 +1,2 @@
+ofxGui
+ofxKinectCommonBridge
