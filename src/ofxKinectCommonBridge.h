@@ -164,9 +164,8 @@ class ofxKinectCommonBridge : protected ofThread {
 	/// enable/disable updating pixels containing real world coordinates
 	void setUseWorldMap(bool use);
 
-	// TODO
 	// mapping helpers
-	ofVec3f getWorldCoordinateAt(int x, int y);
+	glm::vec3 getWorldCoordinateAt(int x, int y);
 	ofFloatPixels& getWorldPixels() { return worldPixels; }
 	ofTexture& getWorldTexture() { return worldTex; }
 

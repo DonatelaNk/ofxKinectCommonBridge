@@ -490,6 +490,21 @@ ofxKCBFace& ofxKinectCommonBridge::getFaceData() {
 #endif
 
 
+glm::vec3 ofxKinectCommonBridge::getWorldCoordinateAt(int x, int y) {
+	glm::vec3 world;
+	if (bUsingWorld) {
+		auto pix = worldPixels.getLine(y).getPixel(x);
+		world.x = pix[0];
+		world.y = pix[1];
+		world.z = pix[2];
+	}
+	else {
+		ofLogWarning("ofxKinectCommonBridge::getWorldCoordinateAt") << "call setUseWorldMap to enable coordinate mapping";
+	}
+	return world;
+}
+
+
 ofPixels& ofxKinectCommonBridge::getColorPixelsRef() {
 	return videoPixels;
 }
@@ -1005,6 +1020,10 @@ bool ofxKinectCommonBridge::start() {
 	if (!bInitedDepth && bUseStreams)
 	{
 		initDepthStream(320, 240);
+	}
+
+	if (bUsingWorld) {
+		createWorldPixels();
 	}
 
 	HRESULT hr = KinectStartStreams(hKinect);
