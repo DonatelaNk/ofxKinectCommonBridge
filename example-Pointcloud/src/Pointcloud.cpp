@@ -23,6 +23,7 @@ void Pointcloud::setup(int _width, int _height, int _steps) {
 	fboNormals.allocate(width, height, GL_RGB32F);
 	fboNormals.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
 
+	createFullScreenQuad();
 	createMesh();
 }
 
