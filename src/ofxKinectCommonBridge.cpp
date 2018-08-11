@@ -265,19 +265,11 @@ void ofxKinectCommonBridge::updateVideoPixels() {
 					videoTex.loadData(videoPixels.getPixels(), colorFormat.dwWidth, colorFormat.dwHeight, GL_RED);
 				}
 				else {
-					videoTex.loadData(videoPixels.getPixels(), colorFormat.dwWidth, colorFormat.dwHeight, GL_LUMINANCE16);
+					videoTex.loadData(videoPixels.getPixels(), colorFormat.dwWidth, colorFormat.dwHeight, GL_LUMINANCE);
 				}
 			}
 			else {
-				if (bProgrammableRenderer) {
-					// programmable renderer likes this
-					// TODO
-					// swizzle this to rgb & a -> GL_ONE
-					videoTex.loadData(videoPixels.getPixels(), colorFormat.dwWidth, colorFormat.dwHeight, GL_BGRA);
-				}
-				else {
-					videoTex.loadData(videoPixels.getPixels(), colorFormat.dwWidth, colorFormat.dwHeight, GL_RGBA);
-				}
+				videoTex.loadData(videoPixels.getPixels(), colorFormat.dwWidth, colorFormat.dwHeight, GL_BGRA);
 			}
 		}
 	}
@@ -349,7 +341,7 @@ void ofxKinectCommonBridge::updateDepthPixels() {
 			}
 			else {
 				depthTex.loadData(depthPixels.getPixels(), depthFormat.dwWidth, depthFormat.dwHeight, GL_LUMINANCE);
-				rawDepthTex.loadData(depthPixelsRaw.getPixels(), depthFormat.dwWidth, depthFormat.dwHeight, GL_LUMINANCE16);
+				rawDepthTex.loadData(depthPixelsRaw.getPixels(), depthFormat.dwWidth, depthFormat.dwHeight, GL_LUMINANCE);
 			}
 		}
 	}
@@ -746,15 +738,13 @@ bool ofxKinectCommonBridge::createDepthPixels(int width, int height) {
 		if (bUseTexture) {
 			if (bProgrammableRenderer) {
 				//int w, int h, int glInternalFormat, bool bUseARBExtention, int glFormat, int pixelType
-				depthTex.allocate(depthFormat.dwWidth, depthFormat.dwHeight, GL_R8);//, true, GL_R8, GL_UNSIGNED_BYTE);
+				depthTex.allocate(depthFormat.dwWidth, depthFormat.dwHeight, GL_R8, ofGetUsingArbTex(), GL_RED, GL_UNSIGNED_BYTE);
 				depthTex.setRGToRGBASwizzles(true);
 
-				//rawDepthTex.allocate(depthFormat.dwWidth, depthFormat.dwHeight, GL_R16, true, GL_RED, GL_UNSIGNED_SHORT);
-				rawDepthTex.allocate(depthPixelsRaw, true);
+				rawDepthTex.allocate(depthFormat.dwWidth, depthFormat.dwHeight, GL_R16, ofGetUsingArbTex(), GL_RED, GL_UNSIGNED_SHORT);
 				rawDepthTex.setRGToRGBASwizzles(true);
 
 				cout << rawDepthTex.getWidth() << " " << rawDepthTex.getHeight() << endl;
-				//depthTex.allocate(depthFormat.dwWidth, depthFormat.dwHeight, GL_RGB);
 			}
 			else {
 				depthTex.allocate(depthFormat.dwWidth, depthFormat.dwHeight, GL_LUMINANCE);
@@ -837,8 +827,9 @@ bool ofxKinectCommonBridge::createColorPixels(int width, int height) {
 		colorFormat.cbBytesPerPixel = 4;
 	}
 
-	videoPixels.allocate(colorFormat.dwWidth, colorFormat.dwHeight, OF_IMAGE_COLOR_ALPHA);
-	videoPixelsBack.allocate(colorFormat.dwWidth, colorFormat.dwHeight, OF_IMAGE_COLOR_ALPHA);
+	videoPixels.allocate(colorFormat.dwWidth, colorFormat.dwHeight, OF_PIXELS_RGBA);
+	videoPixelsBack.allocate(colorFormat.dwWidth, colorFormat.dwHeight, OF_PIXELS_RGBA);
+
 	if (bUseTexture) {
 		videoTex.allocate(colorFormat.dwWidth, colorFormat.dwHeight, GL_RGBA);
 	}
@@ -880,8 +871,8 @@ bool ofxKinectCommonBridge::initIRStream(int width, int height) {
 
 		irPixelByteArray = new BYTE[colorFormat.cbBufferSize];
 
-		videoPixels.allocate(colorFormat.dwWidth, colorFormat.dwHeight, OF_IMAGE_GRAYSCALE);
-		videoPixelsBack.allocate(colorFormat.dwWidth, colorFormat.dwHeight, OF_IMAGE_GRAYSCALE);
+		videoPixels.allocate(colorFormat.dwWidth, colorFormat.dwHeight, OF_PIXELS_GRAY);
+		videoPixelsBack.allocate(colorFormat.dwWidth, colorFormat.dwHeight, OF_PIXELS_GRAY);
 
 		if (bUseTexture) {
 			if (bProgrammableRenderer) {
